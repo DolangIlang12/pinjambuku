@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pinjam Buku - PinjamBuku.com</title>
+  <style>
+    :root{
+      --bg:#f7f4ee;
+      --card:#fff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --line:rgba(15,23,42,.08);
+      --shadow:0 20px 60px rgba(15,23,42,.10);
+      --accent:#0f172a;
+      --soft:#eef2ff;
+      --danger:#b91c1c;
+      --success:#166534;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    a{text-decoration:none;color:inherit}
+    .wrap{max-width:1180px;margin:0 auto;padding:24px}
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      margin-bottom:20px;
+    }
+    .brand{
+      display:flex;align-items:center;gap:12px;font-weight:900;
+    }
+    .brand img{
+      width:44px;height:44px;border-radius:14px;object-fit:cover;border:1px solid var(--line)
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:11px 14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .btn.primary{
+      background:var(--accent);
+      border-color:var(--accent);
+      color:#fff;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:20px;
+    }
+    .panel{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:26px;
+      box-shadow:var(--shadow);
+      padding:24px;
+    }
+    .hero-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:16px;
+    }
+    h1{margin:0 0 8px;font-size:34px;letter-spacing:-.03em}
+    .muted{color:var(--muted)}
+    .toolbar{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:12px;
+      margin:18px 0 18px;
+    }
+    input{
+      width:100%;
+      padding:13px 14px;
+      border:1px solid #e2e8f0;
+      border-radius:14px;
+      outline:none;
+      font-size:14px;
+    }
+    .books{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+    }
+    .book{
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:18px;
+      background:#fcfcfd;
+    }
+    .tag{
+      display:inline-block;
+      padding:6px 10px;
+      background:var(--soft);
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+    .book h3{margin:0 0 8px}
+    .book p{margin:0;color:var(--muted);font-size:14px;line-height:1.6}
+    .book .meta{margin:12px 0 14px;font-size:13px;font-weight:700;color:#334155}
+    .book .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .list{
+      display:grid;
+      gap:12px;
+      margin-top:16px;
+    }
+    .loan{
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      background:#fcfcfd;
+    }
+    .loan-head{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+    }
+    .loan h3{margin:0 0 4px}
+    .status{
+      min-height:20px;
+      margin:0 0 10px;
+      font-size:13px;
+      font-weight:600;
+    }
+    .status.error{color:var(--danger)}
+    .status.success{color:var(--success)}
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin-top:16px;
+    }
+    .stat{
+      background:#f8fafc;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+    }
+    .stat strong{display:block;font-size:22px;margin-bottom:6px}
+    .small{font-size:13px}
+    @media (max-width:980px){
+      .grid,.books{grid-template-columns:1fr}
+      .toolbar{grid-template-columns:1fr}
+      h1{font-size:30px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <img src="./logo.jpeg" alt="Logo">
+        <div>
+          <div style="font-size:18px;">PinjamBuku.com</div>
+          <div class="muted" id="userLabel" style="font-size:13px;font-weight:600;">Memuat akun...</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <a class="btn" href="index.html">Beranda</a>
+        <button class="btn" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="panel">
+        <div class="hero-head">
+          <div>
+            <h1>Pinjam buku</h1>
+            <div class="muted">Pilih buku yang tersedia lalu pinjam. Data pinjaman disimpan di browser.</div>
+          </div>
+          <div class="btn primary" id="refreshBtn">Refresh</div>
+        </div>
+
+        <div id="status" class="status"></div>
+
+        <div class="toolbar">
+          <input id="searchInput" type="text" placeholder="Cari judul atau penulis..." />
+          <button class="btn" id="clearBtn" type="button">Reset</button>
+        </div>
+
+        <div class="books" id="booksContainer"></div>
+      </section>
+
+      <aside class="panel">
+        <h2 style="margin-top:0;">Peminjaman saya</h2>
+        <div class="muted small">Riwayat pinjam aktif dari akun ini.</div>
+
+        <div class="stats">
+          <div class="stat">
+            <strong id="totalLoan">0</strong>
+            <div class="muted small">Buku dipinjam</div>
+          </div>
+          <div class="stat">
+            <strong id="availableCount">0</strong>
+            <div class="muted small">Buku tersedia</div>
+          </div>
+          <div class="stat">
+            <strong id="lateCount">0</strong>
+            <div class="muted small">Jatuh tempo</div>
+          </div>
+        </div>
+
+        <div class="list" id="loanList"></div>
+      </aside>
+    </div>
+  </div>
+
+  <script type="module">
+    import { watchAuth, logoutUser } from "./firebase.js";
+
+    const books = [
+      { id: 1, title: "Laut Bercerita", author: "Leila S. Chudori", category: "Novel", stock: 5, desc: "Cerita kuat tentang perjalanan, kehilangan, dan ingatan." },
+      { id: 2, title: "Atomic Habits", author: "James Clear", category: "Motivasi", stock: 8, desc: "Panduan membangun kebiasaan kecil yang berdampak besar." },
+      { id: 3, title: "Dasar Pemrograman", author: "Tim Akademik", category: "Pendidikan", stock: 4, desc: "Materi awal untuk belajar logika dan kode dari nol." },
+      { id: 4, title: "Kisah-Kisah Nusantara", author: "Raka Pratama", category: "Sastra", stock: 6, desc: "Kumpulan cerita inspiratif dari berbagai daerah." },
+      { id: 5, title: "Belajar HTML CSS", author: "Dina Aulia", category: "Teknologi", stock: 7, desc: "Panduan membuat website dari dasar sampai siap pakai." },
+      { id: 6, title: "Manajemen Waktu", author: "Nadia Putri", category: "Pengembangan Diri", stock: 3, desc: "Teknik sederhana untuk mengatur fokus dan produktivitas." }
+    ];
+
+    const userLabel = document.getElementById("userLabel");
+    const booksContainer = document.getElementById("booksContainer");
+    const loanList = document.getElementById("loanList");
+    const statusBox = document.getElementById("status");
+    const searchInput = document.getElementById("searchInput");
+    const clearBtn = document.getElementById("clearBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const totalLoanEl = document.getElementById("totalLoan");
+    const availableCountEl = document.getElementById("availableCount");
+    const lateCountEl = document.getElementById("lateCount");
+    const refreshBtn = document.getElementById("refreshBtn");
+
+    let currentUser = null;
+    let currentFilter = "";
+
+    function showStatus(message = "", type = "") {
+      statusBox.textContent = message;
+      statusBox.className = `status ${type}`;
+    }
+
+    function loanKey() {
+      return currentUser ? `pinjambuku_loans_${currentUser.uid}` : "pinjambuku_loans_guest";
+    }
+
+    function getLoans() {
+      return JSON.parse(localStorage.getItem(loanKey()) || "[]");
+    }
+
+    function setLoans(loans) {
+      localStorage.setItem(loanKey(), JSON.stringify(loans));
+    }
+
+    function renderBooks() {
+      const q = currentFilter.trim().toLowerCase();
+      const filtered = books.filter(b =>
+        b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q) || b.category.toLowerCase().includes(q)
+      );
+
+      const loans = getLoans();
+      const borrowedIds = new Set(loans.map(x => x.bookId));
+
+      booksContainer.innerHTML = filtered.map(book => {
+        const isBorrowed = borrowedIds.has(book.id);
+        return `
+          <div class="book">
+            <span class="tag">${book.category}</span>
+            <h3>${book.title}</h3>
+            <p>${book.desc}</p>
+            <div class="meta">Penulis: ${book.author}</div>
+            <div class="meta">Stok: ${book.stock - loans.filter(l => l.bookId === book.id).length} buku</div>
+            <div class="actions">
+              <button class="btn primary" data-borrow="${book.id}" ${isBorrowed ? "disabled" : ""}>
+                ${isBorrowed ? "Sudah Dipinjam" : "Pinjam"}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      document.querySelectorAll("[data-borrow]").forEach(btn => {
+        btn.addEventListener("click", () => borrowBook(Number(btn.dataset.borrow)));
+      });
+
+      const available = books.length - loans.length;
+      availableCountEl.textContent = Math.max(available, 0);
+    }
+
+    function renderLoans() {
+      const loans = getLoans();
+      totalLoanEl.textContent = loans.length;
+
+      const today = new Date();
+      const lateCount = loans.filter(loan => new Date(loan.dueDate) < today).length;
+      lateCountEl.textContent = lateCount;
+
+      if (!loans.length) {
+        loanList.innerHTML = `
+          <div class="loan">
+            <h3>Belum ada pinjaman</h3>
+            <div class="muted">Silakan pilih buku dari daftar di sebelah kiri.</div>
+          </div>
+        `;
+        return;
+      }
+
+      loanList.innerHTML = loans.map((loan, index) => `
+        <div class="loan">
+          <div class="loan-head">
+            <div>
+              <h3>${loan.title}</h3>
+              <div class="muted small">Penulis: ${loan.author}</div>
+            </div>
+            <button class="btn" data-return="${index}">Kembalikan</button>
+          </div>
+          <div class="muted small" style="margin-top:10px;">Dipinjam: ${loan.borrowedAt}</div>
+          <div class="muted small">Jatuh tempo: ${loan.dueDate}</div>
+        </div>
+      `).join("");
+
+      document.querySelectorAll("[data-return]").forEach(btn => {
+        btn.addEventListener("click", () => returnBook(Number(btn.dataset.return)));
+      });
+    }
+
+    function borrowBook(bookId) {
+      const book = books.find(b => b.id === bookId);
+      if (!book) return;
+
+      const loans = getLoans();
+      if (loans.some(l => l.bookId === bookId)) {
+        showStatus("Buku ini sudah dipinjam.", "error");
+        return;
+      }
+
+      const borrowedAt = new Date();
+      const dueDate = new Date(borrowedAt);
+      dueDate.setDate(dueDate.getDate() + 7);
+
+      loans.push({
+        bookId: book.id,
+        title: book.title,
+        author: book.author,
+        borrowedAt: borrowedAt.toLocaleDateString("id-ID"),
+        dueDate: dueDate.toLocaleDateString("id-ID")
+      });
+
+      setLoans(loans);
+      showStatus(`Buku "${book.title}" berhasil dipinjam.`, "success");
+      renderBooks();
+      renderLoans();
+    }
+
+    function returnBook(index) {
+      const loans = getLoans();
+      const removed = loans.splice(index, 1);
+      setLoans(loans);
+      showStatus(`Buku "${removed[0]?.title || ""}" sudah dikembalikan.`, "success");
+      renderBooks();
+      renderLoans();
+    }
+
+    searchInput.addEventListener("input", () => {
+      currentFilter = searchInput.value;
+      renderBooks();
+    });
+
+    clearBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      currentFilter = "";
+      renderBooks();
+    });
+
+    refreshBtn.addEventListener("click", () => {
+      renderBooks();
+      renderLoans();
+      showStatus("Data diperbarui.", "success");
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+      await logoutUser();
+      window.location.href = "index.html";
+    });
+
+    watchAuth((user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+      currentUser = user;
+      userLabel.textContent = `Masuk sebagai ${user.email}`;
+      renderBooks();
+      renderLoans();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - PinjamBuku.com</title>
+  <style>
+    :root{
+      --bg:#f7f4ee;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --line:rgba(15,23,42,.08);
+      --shadow:0 20px 60px rgba(15,23,42,.10);
+      --danger:#b91c1c;
+      --success:#166534;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      display:grid;
+      place-items:center;
+      padding:24px;
+    }
+    a{text-decoration:none;color:inherit}
+    .back{
+      position:fixed;
+      top:20px;
+      left:20px;
+      padding:10px 14px;
+      border-radius:14px;
+      background:#fff;
+      border:1px solid var(--line);
+      box-shadow:0 8px 18px rgba(15,23,42,.05);
+      font-size:14px;
+      font-weight:600;
+    }
+    .card{
+      width:100%;
+      max-width:420px;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      padding:32px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:22px;
+    }
+    .brand img{
+      width:52px;
+      height:52px;
+      object-fit:cover;
+      border-radius:16px;
+      border:1px solid var(--line);
+    }
+    .brand-sub{font-size:13px;color:var(--muted);font-weight:600}
+    .brand-title{font-size:18px;font-weight:800;line-height:1.15}
+    h1{
+      margin:0 0 8px;
+      font-size:32px;
+      line-height:1.1;
+      letter-spacing:-.03em;
+    }
+    p{
+      margin:0 0 18px;
+      color:var(--muted);
+      font-size:14px;
+    }
+    .field{margin-bottom:16px}
+    label{
+      display:block;
+      margin-bottom:8px;
+      font-size:13px;
+      font-weight:700;
+      color:#334155;
+    }
+    input{
+      width:100%;
+      padding:13px 14px;
+      border-radius:14px;
+      border:1px solid #e2e8f0;
+      background:#fff;
+      font-size:14px;
+      outline:none;
+      transition:.2s ease;
+    }
+    input:focus{
+      border-color:#cbd5e1;
+      box-shadow:0 0 0 4px rgba(15,23,42,.06);
+    }
+    .row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin:8px 0 18px;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .btn{
+      width:100%;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:14px 18px;
+      border:none;
+      border-radius:16px;
+      background:#0f172a;
+      color:#fff;
+      font-size:14px;
+      font-weight:800;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+    .btn:hover{background:#1e293b;transform:translateY(-1px)}
+    .btn:disabled{opacity:.7;cursor:not-allowed;transform:none}
+    .note{
+      margin-top:18px;
+      text-align:center;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .small-link{
+      background:none;
+      border:none;
+      padding:0;
+      color:#0f172a;
+      font:inherit;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .status{
+      min-height:20px;
+      margin:0 0 14px;
+      font-size:13px;
+      font-weight:600;
+    }
+    .status.error{color:var(--danger)}
+    .status.success{color:var(--success)}
+    @media (max-width:480px){
+      .card{padding:24px}
+      h1{font-size:28px}
+      .back{top:14px;left:14px}
+    }
+  </style>
+</head>
+<body>
+  <a class="back" href="index.html">← Kembali</a>
+
+  <div class="card">
+    <div class="brand">
+      <img src="./logo.jpeg" alt="Logo PinjamBuku.com">
+      <div>
+        <div class="brand-sub">Website Peminjaman Buku</div>
+        <div class="brand-title">PinjamBuku.com</div>
+      </div>
+    </div>
+
+    <h1 id="title">Login</h1>
+    <p id="subtitle">Masuk untuk melanjutkan peminjaman buku.</p>
+
+    <div id="status" class="status"></div>
+
+    <form id="authForm">
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="Masukkan email" required>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="Masukkan password" required minlength="6">
+      </div>
+
+      <div class="row">
+        <label style="margin:0;display:flex;align-items:center;gap:8px;font-weight:600;">
+          <input id="rememberMe" type="checkbox" style="width:auto;margin:0;"> Ingat saya
+        </label>
+        <button type="button" class="small-link" id="forgotBtn">Lupa password?</button>
+      </div>
+
+      <button class="btn" id="submitBtn" type="submit">Masuk</button>
+    </form>
+
+    <div class="note">
+      Belum punya akun? <button id="toggleMode" class="small-link">Daftar</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      watchAuth,
+      loginUser,
+      registerUser,
+      resetPassword
+    } from "./firebase.js";
+
+    const form = document.getElementById("authForm");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const rememberMe = document.getElementById("rememberMe");
+    const statusBox = document.getElementById("status");
+    const submitBtn = document.getElementById("submitBtn");
+    const toggleModeBtn = document.getElementById("toggleMode");
+    const forgotBtn = document.getElementById("forgotBtn");
+    const title = document.getElementById("title");
+    const subtitle = document.getElementById("subtitle");
+
+    let mode = "login";
+
+    function showStatus(message = "", type = "") {
+      statusBox.textContent = message;
+      statusBox.className = `status ${type}`;
+    }
+
+    function setMode(newMode) {
+      mode = newMode;
+      if (mode === "login") {
+        title.textContent = "Login";
+        subtitle.textContent = "Masuk untuk melanjutkan peminjaman buku.";
+        submitBtn.textContent = "Masuk";
+        toggleModeBtn.textContent = "Daftar";
+        forgotBtn.style.display = "inline-block";
+      } else {
+        title.textContent = "Daftar";
+        subtitle.textContent = "Buat akun baru untuk mulai meminjam buku.";
+        submitBtn.textContent = "Buat Akun";
+        toggleModeBtn.textContent = "Masuk";
+        forgotBtn.style.display = "none";
+      }
+      showStatus("");
+    }
+
+    toggleModeBtn.addEventListener("click", () => {
+      setMode(mode === "login" ? "register" : "login");
+    });
+
+    forgotBtn.addEventListener("click", async () => {
+      const email = emailInput.value.trim();
+      if (!email) {
+        showStatus("Masukkan email dulu untuk reset password.", "error");
+        return;
+      }
+      try {
+        await resetPassword(email);
+        showStatus("Email reset password sudah dikirim.", "success");
+      } catch (error) {
+        showStatus(error.message, "error");
+      }
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      showStatus("");
+
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (!email || !password) {
+        showStatus("Email dan password wajib diisi.", "error");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = mode === "login" ? "Memproses..." : "Membuat akun...";
+
+      try {
+        if (mode === "login") {
+          await loginUser(email, password, rememberMe.checked);
+          showStatus("Login berhasil. Mengalihkan...", "success");
+        } else {
+          await registerUser(email, password, rememberMe.checked);
+          showStatus("Akun berhasil dibuat. Mengalihkan...", "success");
+        }
+
+        setTimeout(() => {
+          window.location.href = "pinjam.html";
+        }, 700);
+      } catch (error) {
+        showStatus(error.message, "error");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = mode === "login" ? "Masuk" : "Buat Akun";
+      }
+    });
+
+    watchAuth((user) => {
+      if (user) {
+        window.location.href = "pinjam.html";
+      }
+    });
+  </script>
+</body>
+</html>
